@@ -1,5 +1,8 @@
-﻿using SleepyShark.Caching.Connector;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SleepyShark.Caching.Connector;
 using System;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace SampleClient
@@ -8,27 +11,34 @@ namespace SampleClient
     {
         static void Main(string[] args)
         {
-            //AsynchronousClient.StartClient();
-            string appId = "someApp";
-            string ip = "172.22.62.11";
-            int port = 4485;
+            IServiceCollection services = new ServiceCollection();
+            services.AddSleepySharkCaching(options =>
+            {
+                options.AppId = "sampleApp";
+                options.ServerAddress = GetLocalIPAddress();
+                options.ServerPort = 4485;
+            });
 
-            Client client = new Client(appId, ip, port);
-            //new Thread(() =>
-            //{
-            //    Thread.CurrentThread.IsBackground = true;
-            //    client.Set(appId, "123", new TestClass() { Id = 1, Name = "Name #1", DoB = DateTime.Now });
-            //}).Start();
-            //new Thread(() =>
-            //{
-            //    Thread.CurrentThread.IsBackground = true;
-            //    client.Set(appId, "456", new TestClass() { Id = 1, Name = "Name #3", DoB = DateTime.Now.AddDays(-10) });
-            //}).Start();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            ISleepySharkCache cache = serviceProvider.GetService<ISleepySharkCache>();
 
-            client.Set(appId, "123", new TestClass() { Id = 1, Name = "Name #1", DoB = DateTime.Now });
-            client.Set(appId, "456", new TestClass() { Id = 1, Name = "Name #3", DoB = DateTime.Now.AddDays(-10) });
-            TestClass result = client.Get<TestClass>("456");
+            cache.Set("123", new TestClass() { Id = 1, Name = "Name #1", DoB = DateTime.Now });
+            cache.Set("456", new TestClass() { Id = 1, Name = "Name #3", DoB = DateTime.Now.AddDays(-10) });
+            TestClass result = cache.Get<TestClass>("456");
             Console.ReadLine();
+        }
+
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
         }
     }
 

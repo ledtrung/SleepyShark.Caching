@@ -30,9 +30,7 @@ namespace SleepyShark.Caching
             {
                 while (true)
                 {
-                    Console.WriteLine("Waiting for a connection...");
                     TcpClient client = server.AcceptTcpClient();
-                    Console.WriteLine("Connected!");
                     Thread t = new Thread(new ParameterizedThreadStart(HandleDeivce));
                     t.Start(client);
                 }
@@ -56,7 +54,6 @@ namespace SleepyShark.Caching
                 while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
                 {
                     BinaryFormatter binaryFormatter = new BinaryFormatter();
-                    //binaryFormatter.Binder = SleepySharkSerializationBinder.Default;
                     ICacheResponse response;
                     using (MemoryStream ms = new MemoryStream(bytes))
                     {
@@ -72,7 +69,7 @@ namespace SleepyShark.Caching
                         }
                         else
                         {
-                            throw new InvalidOperationException("Weird action");
+                            throw new InvalidOperationException("Unknown action!");
                         }
                     }
 

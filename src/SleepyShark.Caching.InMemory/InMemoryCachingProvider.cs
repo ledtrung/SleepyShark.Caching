@@ -8,9 +8,10 @@ namespace SleepyShark.Caching.InMemory
 {
     public class InMemoryCachingProvider : ICachingProvider
     {
-        private string _name;
-        public string Name => _name;
         private readonly ConcurrentDictionary<string, CacheEntry> _memory;
+
+        private readonly string _name;
+        public string Name => _name;
 
         public InMemoryCachingProvider(string name)
         {

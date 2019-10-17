@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SleepyShark.Caching.Core\SleepyShark.Caching.Core.csproj" />
     <ProjectReference Include="..\SleepyShark.Caching.InMemory\SleepyShark.Caching.InMemory.csproj" />
   </ItemGroup>

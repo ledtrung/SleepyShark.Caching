@@ -1,8 +1,11 @@
-﻿using SleepyShark.Caching.Core;
+﻿using Microsoft.Extensions.DependencyInjection;
+using SleepyShark.Caching.Core;
 using SleepyShark.Caching.InMemory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 
 namespace SleepyShark.Caching
@@ -11,34 +14,35 @@ namespace SleepyShark.Caching
     {
         static void Main(string[] args)
         {
-            string ip = "172.22.62.11";
-            int port = 4485;
-
-            List<ICachingProvider> lst = new List<ICachingProvider>();
-            lst.Add(new InMemoryCachingProvider("m1") as ICachingProvider);
-            ICachingProviderFactory cachingProviderFactory = new DefaultCachingProviderFactory(lst.AsEnumerable());
-            ICachingProvider cachingProvider = cachingProviderFactory.GetCachingProvider("m1");
-
-            //cachingProvider.Set("something", new SomeClass() { Name = "something#1", Value = 12345 }, new System.TimeSpan(0, 5, 0));
-            //CacheValue<SomeClass> value = cachingProvider.Get<SomeClass>("something");
-
-            //AsynchronousSocketListener.StartListening();
-
-            Thread t = new Thread(delegate ()
+            IServiceCollection services = new ServiceCollection();
+            services.AddSleepySharkCaching(options =>
             {
-                // replace the IP with your system IP Address...
-                Server myserver = new Server(cachingProvider, ip, port);
+                options.UserInMemoryCache("InMemoryCache");
+            });
+
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var cachingProviderFactory = serviceProvider.GetService<ICachingProviderFactory>();
+            ICachingProvider cachingProvider = cachingProviderFactory.GetCachingProvider("InMemoryCache");
+
+            Thread t = new Thread(() =>
+            {
+                Server myserver = new Server(cachingProvider, GetLocalIPAddress(), ServerConfiguration.ListenerPort);
             });
             t.Start();
-
             Console.WriteLine("Server Started...!");
-
         }
-    }
 
-    public class SomeClass
-    {
-        public string Name { get; set; }
-        public int Value { get; set; }
+        public static string GetLocalIPAddress()
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    return ip.ToString();
+                }
+            }
+            throw new Exception("No network adapters with an IPv4 address in the system!");
+        }
     }
 }
