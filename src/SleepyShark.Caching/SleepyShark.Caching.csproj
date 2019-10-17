@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SleepyShark.Caching.Core\SleepyShark.Caching.Core.csproj" />
+    <ProjectReference Include="..\SleepyShark.Caching.InMemory\SleepyShark.Caching.InMemory.csproj" />
+  </ItemGroup>
+
+</Project>
