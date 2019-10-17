@@ -18,20 +18,20 @@ namespace SleepyShark.Caching.InMemory
             _memory = new ConcurrentDictionary<string, CacheEntry>();
         }
 
-        public void Set<T>(string key, T value, TimeSpan expiresIn)
+        public void Set(string key, byte[] value, TimeSpan expiresIn)
         {
             CacheEntry cacheEntry = new CacheEntry(key, value, expiresIn);
             _memory.AddOrUpdate(key, cacheEntry, (keyParam, cacheEntryParam) => cacheEntry);
         }
 
-        public CacheValue<T> Get<T>(string key)
+        public CacheValue Get(string key)
         {
-            if (_memory.TryGetValue(key, out CacheEntry cacheEntry) && cacheEntry.Value is T)
+            if (_memory.TryGetValue(key, out CacheEntry cacheEntry))
             {
-                return new CacheValue<T>((T)cacheEntry.Value, true);
+                return new CacheValue(cacheEntry.Value, true);
             }
             else
-                return new CacheValue<T>(default(T), false);
+                return new CacheValue(null, false);
         }
     }
 }

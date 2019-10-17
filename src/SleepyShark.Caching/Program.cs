@@ -11,10 +11,13 @@ namespace SleepyShark.Caching
     {
         static void Main(string[] args)
         {
-            //List<ICachingProvider> lst = new List<ICachingProvider>();
-            //lst.Add(new InMemoryCachingProvider("m1") as ICachingProvider);
-            //ICachingProviderFactory cachingProviderFactory = new DefaultCachingProviderFactory(lst.AsEnumerable());
-            //ICachingProvider cachingProvider = cachingProviderFactory.GetCachingProvider("m1");
+            string ip = "172.22.62.11";
+            int port = 4485;
+
+            List<ICachingProvider> lst = new List<ICachingProvider>();
+            lst.Add(new InMemoryCachingProvider("m1") as ICachingProvider);
+            ICachingProviderFactory cachingProviderFactory = new DefaultCachingProviderFactory(lst.AsEnumerable());
+            ICachingProvider cachingProvider = cachingProviderFactory.GetCachingProvider("m1");
 
             //cachingProvider.Set("something", new SomeClass() { Name = "something#1", Value = 12345 }, new System.TimeSpan(0, 5, 0));
             //CacheValue<SomeClass> value = cachingProvider.Get<SomeClass>("something");
@@ -24,7 +27,7 @@ namespace SleepyShark.Caching
             Thread t = new Thread(delegate ()
             {
                 // replace the IP with your system IP Address...
-                Server myserver = new Server("192.168.100.44", 4485);
+                Server myserver = new Server(cachingProvider, ip, port);
             });
             t.Start();
 

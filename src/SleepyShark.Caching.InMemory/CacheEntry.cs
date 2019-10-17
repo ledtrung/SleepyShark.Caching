@@ -7,10 +7,10 @@ namespace SleepyShark.Caching.InMemory
     public class CacheEntry
     {
         public string Key { get; set; }
-        public object Value { get; set; }
+        public byte[] Value { get; set; }
         public DateTimeOffset ExpiresAt { get; set; }
 
-        public CacheEntry(string key, object value, TimeSpan expiresIn)
+        public CacheEntry(string key, byte[] value, TimeSpan expiresIn)
         {
             Key = key;
             Value = value;

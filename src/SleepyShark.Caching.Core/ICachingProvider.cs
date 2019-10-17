@@ -7,7 +7,7 @@ namespace SleepyShark.Caching.Core
     public interface ICachingProvider
     {
         string Name { get;  }
-        void Set<T>(string key, T value, TimeSpan expiresIn);
-        CacheValue<T> Get<T>(string key);
+        void Set(string key, byte[] value, TimeSpan expiresIn);
+        CacheValue Get(string key);
     }
 }

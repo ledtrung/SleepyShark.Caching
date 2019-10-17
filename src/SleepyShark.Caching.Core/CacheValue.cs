@@ -5,15 +5,16 @@ using System.Text;
 namespace SleepyShark.Caching.Core
 {
     [Serializable]
-    public class CacheValue<T>
+    public class CacheValue : ICacheResponse
     {
-        public T Value { get; set; }
-        public bool HasValue { get; set; }
+        private bool _isSuccess = false;
+        public bool IsSuccess { get => _isSuccess; }
+        public byte[] Value { get; set; }
 
-        public CacheValue(T value, bool hasValue)
+        public CacheValue(byte[] value, bool isSuccess)
         {
             Value = value;
-            HasValue = hasValue;
+            _isSuccess = isSuccess;
         }
     }
 }
